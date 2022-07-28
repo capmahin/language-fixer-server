@@ -35,13 +35,7 @@ async function run() {
     })
 
 
-    app.get("/", (req, res) => {
-      res.send("dui takar pepsi sakib bhai sexy");
-    });
 
-    app.listen(port, () => {
-      console.log(`Sakib Bhai  listening on port ${port}`);
-    });
 
 
 
@@ -53,6 +47,16 @@ async function run() {
 }
 
 
-
-
 run().catch(console.dir);
+
+
+
+
+
+app.get("/", (req, res) => {
+  res.send("dui takar pepsi sakib bhai sexy");
+});
+
+app.listen(port, () => {
+  console.log(`Sakib Bhai  listening on port ${port}`);
+});
