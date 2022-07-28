@@ -19,7 +19,7 @@ async function run() {
   try {
     await client.connect()
 
-    const reviewsCollection = client.db('LanguageFixer').collection('userReview')
+
 
 
 
