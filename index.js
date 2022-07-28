@@ -21,6 +21,14 @@ async function run() {
 
     const reviewsCollection = client.db('LanguageFixer').collection('userReview')
 
+
+    app.post('/reviews', async (req, res) => {
+      const review = req.body
+      const result = await reviewsCollection.insertOne(review)
+      res.send(result)
+    })
+
+
     app.get('/reviews', async (req, res) => {
       const reviews = await reviewsCollection.find().toArray()
       res.send(reviews)
