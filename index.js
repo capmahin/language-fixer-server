@@ -86,16 +86,19 @@ async function run() {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
+
+
+    app.get("/", (req, res) => {
+      res.send("dui takar pepsi sakib bhai sexy");
+    });
+
+    app.listen(port, () => {
+      console.log(`Sakib Bhai  listening on port ${port}`);
+    });
+
   } finally {
   }
 }
 
 run().catch(console.dir);
 
-app.get("/", (req, res) => {
-  res.send("dui takar pepsi sakib bhai sexy");
-});
-
-app.listen(port, () => {
-  console.log(`Sakib Bhai  listening on port ${port}`);
-});
