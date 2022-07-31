@@ -15,7 +15,7 @@ const io = require("socket.io")(app, {
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://backSlashAdmin:$33Iso4ofqMlKCLHU@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
