@@ -72,9 +72,7 @@ async function run() {
   try {
     await client.connect();
 
-    const reviewsCollection = client
-      .db("LanguageFixer")
-      .collection("userReview");
+    const reviewsCollection = client.db("LanguageFixer").collection("userReview");
 
     app.post("/reviews", async (req, res) => {
       const review = req.body;
@@ -82,7 +80,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/review", async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
