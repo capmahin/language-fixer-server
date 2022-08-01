@@ -1,16 +1,26 @@
 const express = require("express");
-
+const socketio = require("socket.io");
+const http = require("http");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const app = express();
-const port = process.env.PORT || 5000;
-const { nanoid } = require("nanoid");
-const io = require("socket.io")(app, {
-  cors: {
-    origin: "+",
-  },
+const server = http.createServer(app);
+const io = socketio(server);
+const PORT = process.env.PORT || 5000;
+const port = process.env.port || 5001;
+
+const router = require("./router");
+
+io.on("connection", (socket) => {
+  console.log("we have a new connection");
+  socket.on("disconnect", () => {
+    console.log("User had left");
+  });
 });
+app.use(router);
+
+server.listen(PORT, () => console.log(`Server has started on ${PORT} `));
 
 app.use(cors());
 app.use(express.json());
@@ -20,52 +30,6 @@ const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
-});
-
-const users = [];
-const rooms = [];
-
-io.on("connection", (socket) => {
-  socket.emit("me", socket.id);
-  users.push(socket.id);
-  socket.broadcast.emit("updateUsers", users);
-
-  socket.on("disconnect", () => {
-    users = users.filter((users) => user !== socket.id);
-    socket.broadcast.emit("updateUsers", users);
-    socket.disconnect();
-  });
-
-  socket.emit("getAllUsers", users);
-
-  //Rooms
-
-  socket.on("create_room", () => {
-    const room = {
-      id: nanoid(7),
-      chat: [],
-    };
-    socket.join(room);
-    socket.emit("get_room", room);
-    rooms.push(room);
-    socket.broadcast.emit("updateRooms", rooms);
-  });
-
-  socket.on("join_room", (room) => {
-    socket.join(room.id);
-  });
-  socket.broadcast.emit("updateRooms", rooms);
-
-  socket.on("message", (payload) => {
-    rooms.map((room) => {
-      if (room.id === payload.room) {
-        singleChat = { message: payload.message, writer: payload.socketId };
-        room.chat.push(singleChat);
-      }
-    });
-
-    io.to(payload.room).emit("chat", payload);
-  });
 });
 
 async function run() {
