@@ -96,11 +96,17 @@ async function run() {
 
 
 
-  } finally {
+  }
+
+  finally {
+
+
   }
 }
 
 run().catch(console.dir);
+
+
 
 
 
