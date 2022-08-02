@@ -15,9 +15,18 @@ app.use(router);
 app.use(cors());
 app.use(express.json());
 
+
 io.on("connect", (socket) => {
   socket.on("join", ({ name, room }, callback) => {
     const { error, user } = addUser({ id: socket.id, name, room });
+
+const uri = `mongodb+srv://backSlashAdmin:33Iso4ofqMlKCLHU@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverApi: ServerApiVersion.v1,
+});
+
 
     if (error) return callback(error);
 
@@ -76,9 +85,7 @@ async function run() {
   try {
     await client.connect();
 
-    const reviewsCollection = client
-      .db("LanguageFixer")
-      .collection("userReview");
+    const reviewsCollection = client.db("LanguageFixer").collection("userReview");
 
     app.post("/reviews", async (req, res) => {
       const review = req.body;
@@ -86,15 +93,21 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/review", async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
+
+
+
+
   } finally {
   }
 }
 
 run().catch(console.dir);
+
+
 
 app.get("/", (req, res) => {
   res.send("dui takar pepsi sakib bhai sexy");
