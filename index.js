@@ -22,6 +22,7 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
+
 const users = [];
 const rooms = [];
 
