@@ -20,14 +20,6 @@ io.on("connect", (socket) => {
   socket.on("join", ({ name, room }, callback) => {
     const { error, user } = addUser({ id: socket.id, name, room });
 
-    const uri = `mongodb+srv://backSlashAdmin:33Iso4ofqMlKCLHU@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
-    const client = new MongoClient(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverApi: ServerApiVersion.v1,
-    });
-
-
     const users = [];
     const rooms = [];
 
