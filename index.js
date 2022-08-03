@@ -1,69 +1,41 @@
 const express = require("express");
-const socketio = require("socket.io");
 const http = require("http");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const app = express();
-const server = http.createServer(app);
-const io = socketio(server);
-const PORT = process.env.PORT || 5000;
-const port = process.env.port || 5001;
-const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
-const router = require("./router");
-app.use(router);
-app.use(cors());
+
+const port = process.env.port || 5000;
+
 app.use(express.json());
+const { Server } = require("socket.io");
+app.use(cors());
 
-io.on("connect", (socket) => {
-  socket.on("join", ({ name, room }, callback) => {
-    const { error, user } = addUser({ id: socket.id, name, room });
+const server = http.createServer(app);
 
-    if (error) return callback(error);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 
-    socket.join(user.room);
+io.on("connection", (socket) => {
+  console.log(`User Connected: ${socket.id}`);
 
-    socket.emit("message", {
-      user: "admin",
-      text: `${user.name}, welcome to room ${user.room}.`,
-    });
-    socket.broadcast
-      .to(user.room)
-      .emit("message", { user: "admin", text: `${user.name} has joined!` });
-
-    io.to(user.room).emit("roomData", {
-      room: user.room,
-      users: getUsersInRoom(user.room),
-    });
-
-    callback();
+  socket.on("join_room", (data) => {
+    socket.join(data);
+    console.log(`User with ID: ${socket.id} joined room: ${data}`);
   });
 
-  socket.on("sendMessage", (message, callback) => {
-    const user = getUser(socket.id);
-
-    io.to(user.room).emit("message", { user: user.name, text: message });
-
-    callback();
+  socket.on("send_message", (data) => {
+    socket.to(data.room).emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {
-    const user = removeUser(socket.id);
-
-    if (user) {
-      io.to(user.room).emit("message", {
-        user: "Admin",
-        text: `${user.name} has left.`,
-      });
-      io.to(user.room).emit("roomData", {
-        room: user.room,
-        users: getUsersInRoom(user.room),
-      });
-    }
+    console.log("User Disconnected", socket.id);
   });
 });
-
-server.listen(PORT, () => console.log(`Server has started on ${PORT} `));
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -100,6 +72,9 @@ app.get("/", (req, res) => {
   res.send("dui takar pepsi sakib bhai sexy");
 });
 
-app.listen(port, () => {
+// app.listen(port, () => {
+//
+// });
+server.listen(port, () => {
   console.log(`Sakib Bhai  listening on port ${port}`);
 });
