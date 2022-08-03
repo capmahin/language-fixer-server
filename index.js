@@ -69,7 +69,7 @@ io.on("connect", (socket) => {
 
 server.listen(PORT, () => console.log(`Server has started on ${PORT} `));
 
-const uri = `mongodb+srv://backSlashAdmin:33Iso4ofqMlKCLHU@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
