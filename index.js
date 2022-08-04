@@ -11,6 +11,7 @@ app.use(express.json());
 const { Server } = require("socket.io");
 app.use(cors());
 
+<<<<<<< HEAD
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -19,6 +20,22 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+=======
+
+io.on("connect", (socket) => {
+  socket.on("join", ({ name, room }, callback) => {
+    const { error, user } = addUser({ id: socket.id, name, room });
+
+const uri = `mongodb+srv://backSlashAdmin:33Iso4ofqMlKCLHU@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverApi: ServerApiVersion.v1,
+});
+
+
+    if (error) return callback(error);
+>>>>>>> 30421da278a7b3f04f9e9ec45f35ba6004666d60
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
@@ -48,9 +65,7 @@ async function run() {
   try {
     await client.connect();
 
-    const reviewsCollection = client
-      .db("LanguageFixer")
-      .collection("userReview");
+    const reviewsCollection = client.db("LanguageFixer").collection("userReview");
 
     app.post("/reviews", async (req, res) => {
       const review = req.body;
@@ -58,15 +73,21 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/review", async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
+
+
+
+
   } finally {
   }
 }
 
 run().catch(console.dir);
+
+
 
 app.get("/", (req, res) => {
   res.send("dui takar pepsi sakib bhai sexy");
