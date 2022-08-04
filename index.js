@@ -11,7 +11,6 @@ app.use(express.json());
 const { Server } = require("socket.io");
 app.use(cors());
 
-<<<<<<< HEAD
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -20,17 +19,6 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-=======
-
-io.on("connect", (socket) => {
-  socket.on("join", ({ name, room }, callback) => {
-    const { error, user } = addUser({ id: socket.id, name, room });
-
-    const users = [];
-    const rooms = [];
-
-    if (error) return callback(error);
->>>>>>> 30421da278a7b3f04f9e9ec45f35ba6004666d60
 
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
