@@ -37,6 +37,10 @@ io.on("connection", (socket) => {
   });
 });
 
+server.listen(5001, () => {
+  console.log("SERVER RUNNING");
+});
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -48,7 +52,9 @@ async function run() {
   try {
     await client.connect();
 
-    const reviewsCollection = client.db("LanguageFixer").collection("userReview");
+    const reviewsCollection = client
+      .db("LanguageFixer")
+      .collection("userReview");
 
     app.post("/reviews", async (req, res) => {
       const review = req.body;
@@ -56,27 +62,15 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/reviews", async (req, res) => {
+    app.get("/review", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
-
-
-
-
-  }
-
-  finally {
-
-
+  } finally {
   }
 }
 
 run().catch(console.dir);
-
-
-
-
 
 app.get("/", (req, res) => {
   res.send("dui takar pepsi sakib bhai sexy");
@@ -85,6 +79,6 @@ app.get("/", (req, res) => {
 // app.listen(port, () => {
 //
 // });
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Sakib Bhai  listening on port ${port}`);
 });
