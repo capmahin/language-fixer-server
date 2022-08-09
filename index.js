@@ -2,7 +2,7 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion } = require("mongodb")
 const app = express();
 
 const port = process.env.port || 5000;
@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://language-fixer.vercel.app/",
+    origin: "http://localhost:3000/",
     methods: ["GET", "POST"],
   },
 });
@@ -41,12 +41,11 @@ server.listen(5001, () => {
   console.log("SERVER RUNNING");
 });
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.akik6.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
-});
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x3cu1xp.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+
+
 
 async function run() {
   try {
@@ -82,3 +81,6 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Sakib Bhai  listening on port ${port}`);
 });
+
+
+
