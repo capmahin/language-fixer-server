@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "https://language-fixer.vercel.app/",
+        origin: "http://localhost:3000/",
         methods: ["GET", "POST"],
     },
 });
@@ -41,7 +41,7 @@ server.listen(5001, () => {
     console.log("SERVER RUNNING");
 });
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x3cu1xp.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x3cu1xp.mongodb.net/?retryWrites=true&w=majority;`;
 const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -76,6 +76,9 @@ app.get("/", (req, res) => {
     res.send("dui takar pepsi sakib bhai sexy");
 });
 
+// app.listen(port, () => {
+//
+// });
 app.listen(port, () => {
-    console.log(`Sakib Bhai is listening on port ${port}`);
+    console.log(`Sakib Bhai  listening on port ${port}`);
 });
