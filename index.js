@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://language-fixer.vercel.app/",
+    origin: "https://language-fixer.vercel.app",
     methods: ["GET", "POST"],
   },
 });
@@ -54,9 +54,10 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5001, () => {
-  console.log("SERVER RUNNING");
-});
+// server.listen(5001, () => {
+//   console.log("SERVER RUNNING");
+// });
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x3cu1xp.mongodb.net`;
 const client = new MongoClient(uri, {
@@ -96,6 +97,6 @@ app.get("/", (req, res) => {
 // app.listen(port, () => {
 //
 // });
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Sakib Bhai  listening on port ${port}`);
 });
