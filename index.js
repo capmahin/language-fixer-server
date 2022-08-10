@@ -5,7 +5,7 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const app = express();
 
-const port = process.env.port || 5000;
+const port = process.env.PORT || 5000;
 
 app.use(express.json());
 const { Server } = require("socket.io");
@@ -41,7 +41,8 @@ server.listen(5001, () => {
     console.log("SERVER RUNNING");
 });
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x3cu1xp.mongodb.net/?retryWrites=true&w=majority;`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x3cu1xp.mongodb.net`;
+
 const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -55,6 +56,23 @@ async function run() {
         const reviewsCollection = client
             .db("LanguageFixer")
             .collection("userReview");
+        const userCollection = client.db("LanguageFixer").collection("users");
+
+        app.put("/user/:email", async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await userCollection.updateOne(
+                filter,
+                updateDoc,
+                options
+            );
+            res.send(result);
+        });
 
         app.post("/reviews", async (req, res) => {
             const review = req.body;
