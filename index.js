@@ -9,7 +9,13 @@ const port = process.env.port || 5000;
 
 app.use(express.json());
 const { Server } = require("socket.io");
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    optionsSuccessStatus: 200,
+    credentials: true,
+  })
+);
 
 const server = http.createServer(app);
 
