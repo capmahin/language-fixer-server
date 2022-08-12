@@ -12,13 +12,19 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 const { Server } = require("socket.io");
-app.use(cors());
+app.use(
+    cors({
+        origin: true,
+        optionsSuccessStatus: 200,
+        credentials: true,
+    })
+);
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000/",
+        origin: "https://language-fixer.vercel.app/",
         methods: ["GET", "POST"],
     },
 });
@@ -38,11 +44,31 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log("User Disconnected", socket.id);
     });
+    socket.emit("me", socket.id);
+
+    socket.on("disconnect", () => {
+        socket.broadcast.emit("callEnded");
+    });
+
+    socket.on("callUser", (data) => {
+        io.to(data.userToCall).emit("callUser", {
+            signal: data.signalData,
+            from: data.from,
+            name: data.name,
+        });
+    });
+
+    socket.on("answerCall", (data) => {
+        io.to(data.to).emit("callAccepted", data.signal);
+    });
 });
 
-server.listen(5001, () => {
-    console.log("SERVER RUNNING");
-});
+// server.listen(5001, () => {
+//   console.log("SERVER RUNNING");
+// });
+
+//     console.log("SERVER RUNNING");
+// });
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x3cu1xp.mongodb.net`;
 
@@ -136,6 +162,6 @@ app.get("/", (req, res) => {
 // app.listen(port, () => {
 //
 // });
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Sakib Bhai  listening on port ${port}`);
 });
