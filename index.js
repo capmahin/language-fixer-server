@@ -2,6 +2,9 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
+//json web token generator
+//require('crypto').randomBytes(64).toString('hex')
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const app = express();
 
@@ -49,6 +52,21 @@ const client = new MongoClient(uri, {
     serverApi: ServerApiVersion.v1,
 });
 
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+        return res.status(401).send({ message: "Unauthorized access" });
+    }
+    const token = authHeader.split(" ")[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+        if (err) {
+            return res.status(401).send({ message: "Forbidden access" });
+        }
+        req.decoded = decoded;
+        next();
+    });
+}
+
 async function run() {
     try {
         await client.connect();
@@ -57,6 +75,22 @@ async function run() {
             .db("LanguageFixer")
             .collection("userReview");
         const userCollection = client.db("LanguageFixer").collection("users");
+
+        app.get("/user", async (req, res) => {
+            const users = await userCollection.find().toArray();
+            res.send(users);
+        });
+
+        app.put("/user/admin/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const updateDoc = {
+                $set: { role: "admin" },
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+
+            res.send({ result });
+        });
 
         app.put("/user/:email", async (req, res) => {
             const email = req.params.email;
@@ -71,7 +105,12 @@ async function run() {
                 updateDoc,
                 options
             );
-            res.send(result);
+            const token = jwt.sign(
+                { email: email },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: "1h" }
+            );
+            res.send({ result, token });
         });
 
         app.post("/reviews", async (req, res) => {
