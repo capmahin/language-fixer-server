@@ -5,7 +5,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 //json web token generator
 //require('crypto').randomBytes(64).toString('hex')
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 
 const port = process.env.PORT || 5000;
@@ -102,6 +102,8 @@ async function run() {
       .collection("userReview");
     const userCollection = client.db("LanguageFixer").collection("users");
 
+    const blogsCollection = client.db("LanguageFixer").collection("blogs");
+
     app.get("/user", async (req, res) => {
       const users = await userCollection.find().toArray();
       res.send(users);
@@ -126,11 +128,9 @@ async function run() {
       const updateDoc = {
         $set: user,
       };
-      const result = await userCollection.updateOne(
-        filter,
-        updateDoc,
-        options
-      );
+
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
       const token = jwt.sign(
         { email: email },
         process.env.ACCESS_TOKEN_SECRET,
@@ -149,6 +149,18 @@ async function run() {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
+
+    app.get("/blogs", async (req, res) => {
+      const blogs = await blogsCollection.find().toArray();
+      res.send(blogs);
+    });
+    app.get("/blogs/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const blog = await blogsCollection.findOne(query);
+      res.send(blog);
+    });
+
   } finally {
   }
 }
