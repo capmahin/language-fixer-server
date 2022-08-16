@@ -15,13 +15,6 @@ app.use(express.json());
 
 app.use(cors());
 
-app.use(
-  cors({
-    origin: true,
-    optionsSuccessStatus: 200,
-    credentials: true,
-  })
-);
 
 var server = http.createServer(app);
 
