@@ -20,7 +20,7 @@ var server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://language-fixer.vercel.app/",
+    origin: "https://language-fixer.vercel.app",
 
     methods: ["GET", "POST"],
   },
