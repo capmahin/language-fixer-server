@@ -27,7 +27,7 @@ var server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://young-plains-25750.herokuapp.com/",
+    origin: "https://language-fixer.vercel.app/",
 
     methods: ["GET", "POST"],
   },
