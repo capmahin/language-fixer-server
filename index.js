@@ -15,7 +15,6 @@ app.use(express.json());
 
 app.use(cors());
 
-const { Server } = require("socket.io");
 app.use(
   cors({
     origin: true,
