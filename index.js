@@ -94,6 +94,7 @@ async function run() {
         const userCollection = client.db("LanguageFixer").collection("users");
 
         const blogsCollection = client.db("LanguageFixer").collection("blogs");
+        const infoCollection = client.db("LanguageFixer").collection("info");
 
         app.get("/user", async (req, res) => {
             const users = await userCollection.find().toArray();
@@ -154,6 +155,53 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const blog = await blogsCollection.findOne(query);
             res.send(blog);
+        });
+
+        //post profile info
+        app.post("/info", async (req, res) => {
+            const review = req.body;
+            const result = await infoCollection.insertOne(review);
+            res.send(result);
+        });
+        // get info
+        app.get("/info", async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = await infoCollection.find(query);
+            const info = await cursor.toArray();
+            res.send(info);
+            console.log(cursor);
+        });
+
+        // update profile
+        app.put("/info", async (req, res) => {
+            const email = req.query.email;
+
+            const query = { email: email };
+            const options = { upsert: true };
+            const newLivesIn = req.body.updatedLivesIn;
+            const newStudyIn = req.body.updatedStudyIn;
+            const newPhone = req.body.updatedPhone;
+            const newLinkedIn = req.body.updatedLinkedIn;
+            const newGithub = req.body.updatedGithub;
+            const newFacebook = req.body.updatedFacebook;
+            const result = await infoCollection.updateOne(
+                query,
+                {
+                    $set: {
+                        livesIn: newLivesIn,
+                        studyIn: newStudyIn,
+                        phone: newPhone,
+                        linkedIn: newLinkedIn,
+                        github: newGithub,
+                        facebook: newFacebook,
+                    },
+                },
+
+                options
+            );
+            res.json(result);
+            console.log(newLivesIn);
         });
     } finally {
     }
