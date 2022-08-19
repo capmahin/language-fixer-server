@@ -209,6 +209,7 @@ async function run() {
 
 run().catch(console.dir);
 
+
 app.get("/", (req, res) => {
     res.send("dui takar pepsi sakib bhai sexy");
 });
@@ -216,6 +217,8 @@ app.get("/", (req, res) => {
 // app.listen(port, () => {
 //
 // });
+
+
 server.listen(port, () => {
     console.log(`Sakib Bhai  listening on port ${port}`);
 });
