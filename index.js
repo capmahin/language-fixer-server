@@ -94,31 +94,20 @@ async function run() {
         const userCollection = client.db("LanguageFixer").collection("users");
         const blogsCollection = client.db("LanguageFixer").collection("blogs");
         const infoCollection = client.db("LanguageFixer").collection("info");
-        const classesCollection = client.db("LanguageFixer").collection("classes")
 
         app.get("/user", async (req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
         });
 
-        app.put("/user/admin/:email", async (req, res) => {
-            const email = req.params.email;
-            const filter = { email: email };
-            const updateDoc = {
-                $set: { role: "admin" },
-            };
-            const result = await userCollection.updateOne(filter, updateDoc);
 
-            res.send({ result });
-        });
 
         app.put("/user/:email", async (req, res) => {
             const email = req.params.email;
-            const user = req.body;
             const filter = { email: email };
             const options = { upsert: true };
             const updateDoc = {
-                $set: user,
+                $set: { role: "admin" },
             };
 
             const result = await userCollection.updateOne(
@@ -127,13 +116,54 @@ async function run() {
                 options
             );
 
-            const token = jwt.sign(
-                { email: email },
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: "1h" }
-            );
-            res.send({ result, token });
+            // const token = jwt.sign(
+            //     { email: email },
+            //     process.env.ACCESS_TOKEN_SECRET,
+            //     { expiresIn: "1h" }
+            // );
+            res.send({ result });
         });
+
+
+        app.put("/addClasses/:email", async (req, res) => {
+            const email = req.params.email;
+            const classes = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: classes,
+            };
+
+            const result = await userCollection.updateOne(
+                filter,
+                updateDoc,
+                options
+            );
+
+            // const token = jwt.sign(
+            //     { email: email },
+            //     process.env.ACCESS_TOKEN_SECRET,
+            //     { expiresIn: "1h" }
+            // );
+            res.send({ result });
+        });
+
+
+        // add user to backend after login or signup
+
+        app.put('/userUpdateDB/:email', async (req, res) => {
+            const email = req.params.email
+            const userInfo = req.body
+            const filter = { email: email }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: userInfo,
+            }
+            const result = await userCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
+
+
 
         app.post("/reviews", async (req, res) => {
             const review = req.body;
@@ -202,18 +232,6 @@ async function run() {
             );
             res.json(result);
             console.log(newLivesIn);
-        });
-
-
-        app.post("/CreateClass", async (req, res) => {
-            const classN = req.body;
-            const result = await classesCollection.insertOne(classN);
-            res.send(result);
-        });
-
-        app.get("/classes", async (req, res) => {
-            const classes = await classesCollection.find().toArray();
-            res.send(classes);
         });
 
 
