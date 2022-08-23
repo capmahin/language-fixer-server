@@ -90,13 +90,11 @@ async function run() {
     try {
         await client.connect();
 
-        const reviewsCollection = client
-            .db("LanguageFixer")
-            .collection("userReview");
+        const reviewsCollection = client.db("LanguageFixer").collection("userReview");
         const userCollection = client.db("LanguageFixer").collection("users");
-
         const blogsCollection = client.db("LanguageFixer").collection("blogs");
         const infoCollection = client.db("LanguageFixer").collection("info");
+        const classesCollection = client.db("LanguageFixer").collection("classes")
 
         app.get("/user", async (req, res) => {
             const users = await userCollection.find().toArray();
@@ -205,7 +203,25 @@ async function run() {
             res.json(result);
             console.log(newLivesIn);
         });
-    } finally {
+
+
+        app.post("/CreateClass", async (req, res) => {
+            const classN = req.body;
+            const result = await classesCollection.insertOne(classN);
+            res.send(result);
+        });
+
+        app.get("/classes", async (req, res) => {
+            const classes = await classesCollection.find().toArray();
+            res.send(classes);
+        });
+
+
+
+
+    }
+    finally {
+
     }
 }
 
