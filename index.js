@@ -36,7 +36,7 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use("/peerjs", peerServer);
 
-app.get("/", (req, rsp) => {
+app.get("/liveSession", (req, rsp) => {
   rsp.redirect(`/${uuidv4()}`);
 });
 
