@@ -40,7 +40,7 @@ app.get("/liveSession", (req, rsp) => {
   rsp.redirect(`/${uuidv4()}`);
 });
 
-app.get("/:room", (req, res) => {
+app.get("/liveSession/:room", (req, res) => {
   res.render("room", { roomId: req.params.room });
 });
 
