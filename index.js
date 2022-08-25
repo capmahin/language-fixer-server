@@ -26,25 +26,9 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-// const io = require("socket.io")(server);
 
-const peerServer = ExpressPeerServer(server, {
-  debug: true,
-});
 
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-app.use("/peerjs", peerServer);
 
-app.get("/liveSession", (req, rsp) => {
-  rsp.redirect(`/${uuidv4()}`);
-});
-
-app.get("/liveSession/:room", (req, res) => {
-  res.render("room", { roomId: req.params.room });
-});
-
-// io.on("connection", (socket) => {});
 
 //LiveSession
 
@@ -64,14 +48,6 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("callEnded");
   });
 
-  socket.on("join-room", (roomId, userId) => {
-    socket.join(roomId);
-    socket.to(roomId).emit("user-connected", userId);
-
-    socket.on("message", (message) => {
-      io.to(roomId).emit("createMessage", message);
-    });
-  });
 });
 
 // server.listen(5001, () => {
@@ -115,7 +91,7 @@ async function run() {
     const infoCollection = client.db("LanguageFixer").collection("info");
 
 
-    app.get("/user", async (req, res) => {
+    app.get("/users", async (req, res) => {
       const users = await userCollection.find().toArray();
       res.send(users);
     });
@@ -123,14 +99,14 @@ async function run() {
 
 
 
-    app.put("/user/:email", async (req, res) => {
+    app.put("/user/addAdmin/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const options = { upsert: true };
       const updateDoc = {
         $set: { role: "admin" },
       };
-      const result = await userCollection.updateOne(filter, updateDoc);
+      const result = await userCollection.updateOne(filter, updateDoc, options);
 
       res.send({ result });
     });
@@ -186,6 +162,27 @@ async function run() {
         $set: userInfo,
       }
       const result = await userCollection.updateOne(filter, updateDoc, options)
+      res.send(result)
+    })
+
+    // add students to db
+
+    app.put("/user/addStudent/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const students = req.body
+      const options = { upsert: true }
+      const updateDoc = { $push: { students }, };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send({ result });
+    });
+
+
+
+    app.get('/user/:email', async (req, res) => {
+      const email = req.params.email
+      const filter = { email: email };
+      const result = await userCollection.findOne(filter)
       res.send(result)
     })
 
